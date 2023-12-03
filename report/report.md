@@ -61,23 +61,6 @@ Raws of this matrix are users, columns are items. The values in the matrix are r
 
 Next this matrix is factorized using SVD algorithm. And as the result after SVD we get the filled matrix, where the missing values are filled with the predicted ratings. The process of factorization is described in training process section.
 
-In this algo I taken top 100 movies with the highest predicted rating and recommended them to the user. With this setup I got the following results, varying the number of singular values:
-
-| K   | intersections | rmse            |
-|-----|---------------|-----------------|
-| 8   | 1.69459172853 | 0.98045045859   |
-| 10  | 1.67126193001 | 0.979928654979  |
-| 12  | 1.62354188759 | 0.979406993207  |
-| 14  | 1.73276776246 | 0.97981678108   |
-| 17  | 1.65959703075 | 0.981769152389  |
-| 943 | 1.62884411453 | 1.0261583429    |
-
-As we can see, the best results are achieved with k = 12. The number of intersections is the number of movies that are in both the test set and the recommended set. The rmse is the root mean squared error between the predicted ratings and the real ratings. The rmse is calculated only for the test set. The rmse is calculated using the following formula:
-
-$$\sqrt{\frac{\sum_{i=1}^{n}(y_i - \hat{y_i})^2}{n}}$$
-
-Where $y_i$ is the real rating, $\hat{y_i}$ is the predicted rating, n is the number of ratings in the test set.
-
 #### LightGCN:
 This approach is pretty the same as used in the lab, but with some modifications in model architecture and evaluation process. 
 
@@ -160,3 +143,90 @@ $$U\sqrt{S} \times \sqrt{S}V^T$$
 With this approach we can recommend movies to the user by simply sorting the movies by the predicted rating.
 
 #### LightGCN:
+
+To train LightGCN we firstly need to prepare the data. Batch for the model consists of the following elements:
+
+* users - list of users in the batch
+* pos_items - list of items that were rated by the users in the batch
+* neg_items - list of items that were not rated by the users in the batch
+
+This negative sampling is done, as we use Bayesian Personalized Ranking(BPR) loss function, which is defined as follows:
+
+![bpr_loss](figures/Loss.png)
+
+$M$ here is size of the batch, $\hat{y}_{ui}$ and $\hat{y}_{uj}$ are the predicted scores of the items $i$ and $j$ for the user $u$. $i$ is the positive item, which was rated by the user. $j$ is the negative item, which was not rated by the user and we predict the score for it. 
+
+And $\lambda \|E^{(0)}\|^2$ is regularization term, which is used to prevent overfitting. $E^{(0)}$ is the embeddings of the users and the items at the 0-th layer. 
+
+$-\ln(\sigma(x))$ is is equivalent to the Softplus function, which is defined as 
+
+$$\frac{1}{\beta} \ln(1 + \exp{(\beta x)})$$
+
+Where $\beta = 1$.
+
+And following this formula we can calculate the loss for the batch. And then we can calculate the gradients and update the embeddings of the users and the items.
+
+## Evaluation:
+
+#### Matrix factorization:
+
+In this algo I taken top 100 movies with the highest predicted rating and recommended them to the user. With this setup I got the following results, varying the number of singular values:
+
+| K   | intersections | rmse            |
+|-----|---------------|-----------------|
+| 8   | 1.69459172853 | 0.98045045859   |
+| 10  | 1.67126193001 | 0.979928654979  |
+| 12  | 1.62354188759 | 0.979406993207  |
+| 14  | 1.73276776246 | 0.97981678108   |
+| 17  | 1.65959703075 | 0.981769152389  |
+| 943 | 1.62884411453 | 1.0261583429    |
+
+As we can see, the best results are achieved with k = 12. The number of intersections is the number of movies that are in both the test set and the recommended set. The rmse is the root mean squared error between the predicted ratings and the real ratings. The rmse is calculated only for the test set. The rmse is calculated using the following formula:
+
+$$\sqrt{\frac{\sum_{i=1}^{n}(y_i - \hat{y_i})^2}{n}}$$
+
+Where $y_i$ is the real rating, $\hat{y_i}$ is the predicted rating, n is the number of ratings in the test set.
+
+#### LightGCN:
+
+In this algo I taken top 20 movies with the highest predicted rating and recommended them to the user. With this setup I got the following results:
+
+Loss history during the training process:
+
+![loss_history](figures/gcnLoss.png)
+
+Recall and precision during the training process:
+
+![recall_precision](figures/gcn_recall.png)
+
+RMSE during the training process:
+
+![rmse](figures/gcn_rmse.png)
+
+As we can see, the recall and precision are increasing during the training process. The rmse is decreasing during the training process.
+
+## Results:
+
+After model training I got the following results:
+
+For the LightGCN:
+
+![gcn_results](figures/gcn_res.png)
+
+For the SVD:
+
+![svd_results](figures/res_svd.png)
+
+As we can see, the LightGCN performs better than SVD. The recall and precision are higher for LightGCN. The rmse is lower for LightGCN. 
+
+But the general performance of both models is not very good. The recall and precision are not very high. And the rmse is close to 1.0. in both cases. That means that the user, which rate the movie with 3.0 can get the predicted rating of 4.0 or 2.0. And this is not very good.
+
+The reason for this is that the task of movie recommendation is very hard. And watching history of the user can't guarantee that he will like the movie. 
+
+Considering the overall benchmark results for this task, we can see that for the RMSE of all the existing models is not very good 
+
+![benchmark](figures/benchmark.png)
+
+SOTA model for this task achieves RMSE 0.887.
+
+So, from this I can conclude that the results of my models is not that bad, comparing it with all the existing solutions.
