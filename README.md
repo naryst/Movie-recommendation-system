@@ -1,6 +1,10 @@
 # Practical Machine Learning and Deep Learning - Assignment 2 - Movie Recommender System
 
+# Nikita Sergeev    
+# n.sergeev@innopolis.university
+
 ## Task description
+
 
 A recommender system is a type of information filtering system that suggests items or content to users based on their interests, preferences, or past behavior. These systems are commonly used in various domains, such as e-commerce, entertainment, social media, and online content platforms.
 
@@ -68,9 +72,6 @@ movie-recommender-system
     └── evaluate.py         # script that performs evaluation of the given model
 ```
 
-
-In the top `README.md` file put your name, email and group number.
-
 In the `reports` directory create a report about your work. In the report, describe in details the implementation of your system. Mention its advantages and disadvantages.
 
 ### Expected Report Structure
@@ -91,20 +92,4 @@ In the `reports` directory create a report about your work. In the report, descr
 # Results
 ...
 ```
-
-In the `notebooks` directory put at least two notebooks. **First notebook** should contain your initial data exploration and basic ideas behind data preprocessing. **Second notebook** should contain information about final solution training and visualization.
-
-## Grading criterias
-
-Full assignment without any problems is said to be the `100%` solution.
-
-| Criteria | Weight (%) | Comment |
-| ---- | ----- | ----- |
-| Structure and code quality | 30 | Code quality, structure, comments, clean repo, commit history, reproducibility (manual seeding) |
-| Visualization, notebooks quality | 10 | Jupyter notebooks, visualizations |
-| Solution building | 40 |  Implementation description, references, final report structure |
-| Final score, evaluation  | 20 | Evaluation function, final score, quality of results |
-
-If **PMLDL Course Team** will have any questions about your assignment or your work fails to show your results you will be called solution defence procedure. 
-
 
